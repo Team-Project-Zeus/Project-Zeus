@@ -25,8 +25,7 @@ class CheckRole
 //            return redirect('/home')->with('error', 'You have access');
 //        }
 //    }
-
-.asdfasf
+        
 
         if (Auth::user()->user_roles == 'Default') {
             //user heeft verkeerde rol
