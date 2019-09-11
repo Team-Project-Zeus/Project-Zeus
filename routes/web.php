@@ -17,4 +17,12 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'HomeController@index')->name('home')->middleware('CheckRole');
+
+Route::get('/error', 'HomeController@error')->name('error');
+
+
+//Route::middleware(['CheckRole'])->group(function () {
+//    Route::get('/', function () {
+//        // Uses first & second Middleware
+//    });
