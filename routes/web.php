@@ -13,16 +13,12 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('/');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home')->middleware('CheckRole');
-
 Route::get('/error', 'HomeController@error')->name('error');
 
-
-//Route::middleware(['CheckRole'])->group(function () {
-//    Route::get('/', function () {
-//        // Uses first & second Middleware
-//    });
+Route::middleware(['CheckRole'])->group(function () {
+    Route::get('/home', 'HomeController@index')->name('home');
+});

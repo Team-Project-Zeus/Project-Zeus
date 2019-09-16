@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Auth;
+use Response;
+
 
 class CheckRole
 {
@@ -16,35 +18,12 @@ class CheckRole
      */
     public function handle($request, Closure $next)
     {
-        //dd(Auth::user());
         if (Auth::check()) {
-            if (Auth::user()->user_role === 'Admin') {
-
-                return redirect('error')->with('error', 'Je hebt niet de juiste rol.');
-            } else {
-                return redirect('home');
+            if (Auth::user()->user_role == 'Admin' || Auth::user()->user_role == 'Customer' || Auth::user()->user_role == 'Driving_instructor') {
+                return $next($request);
             }
-        }
 
-        return $next($request);
+            return redirect('/error')->with('error', 'You do not have access');
+       }
     }
-
-
-//        if (Auth::user()->user_role == 'Default') {
-//            //user heeft verkeerde rol
-//            return redirect('error')->with('error', 'Wrong role...');
-//        }
-//
-//        if (Auth::user()->user_role != 'Default' || '') {
-//            //user heeft verkeerde rol
-//            return redirect('home')->with('error', 'je bent ingelogd...');
-//        }
-//
-//        if (Auth::check()) {
-//            //user is niet ingelogd
-//            return redirect('error')->with('error', 'je bent wel logged in...');
-//        }
-
-//        return $next($request);
-//    }
 }

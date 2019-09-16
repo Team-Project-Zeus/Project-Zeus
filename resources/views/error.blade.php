@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title')
-    Laravel Shopping Cart
-@endsection
+@extends('layouts.cleanLayout')
 @section('content')
 
     <body class="bg-purple">
@@ -10,7 +6,7 @@
     <div class="stars">
         <div class="central-body">
             <img class="image-404" src="http://salehriaz.com/404Page/img/404.svg" width="300px">
-            <a href="http://salehriaz.com/404Page/404.html" class="btn-go-home" target="_blank">GO BACK HOME</a>
+            <a href="{{route('/')}}" class="btn-go-home" target="_blank">GO BACK HOME</a>
         </div>
         <div class="objects">
             <img class="object_rocket" src="http://salehriaz.com/404Page/img/rocket.svg" width="40px">
