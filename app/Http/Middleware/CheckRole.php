@@ -16,32 +16,35 @@ class CheckRole
      */
     public function handle($request, Closure $next)
     {
-
-//        if (Auth::check()) {
-//            if (Auth::user()->user_roles = 'Default') {
-//                return $next($request);
-//            }
-//        } else {
-//            return redirect('/home')->with('error', 'You have access');
-//        }
-//    }
-        
-
-        if (Auth::user()->user_roles == 'Default') {
-            //user heeft verkeerde rol
-            return redirect('error')->with('error', 'Wrong role...');
-        }
-
-        if (Auth::user()->user_roles != 'Default') {
-            //user heeft verkeerde rol
-            return redirect('home')->with('error', 'je bent ingelogd...');
-        }
-
+        //dd(Auth::user());
         if (Auth::check()) {
-            //user is niet ingelogd
-            return redirect('error')->with('error', 'je bent wel logged in...');
+            if (Auth::user()->user_role === 'Admin') {
+
+                return redirect('error')->with('error', 'Je hebt niet de juiste rol.');
+            } else {
+                return redirect('home');
+            }
         }
 
         return $next($request);
     }
+
+
+//        if (Auth::user()->user_role == 'Default') {
+//            //user heeft verkeerde rol
+//            return redirect('error')->with('error', 'Wrong role...');
+//        }
+//
+//        if (Auth::user()->user_role != 'Default' || '') {
+//            //user heeft verkeerde rol
+//            return redirect('home')->with('error', 'je bent ingelogd...');
+//        }
+//
+//        if (Auth::check()) {
+//            //user is niet ingelogd
+//            return redirect('error')->with('error', 'je bent wel logged in...');
+//        }
+
+//        return $next($request);
+//    }
 }
