@@ -19,7 +19,6 @@ class CheckRole
     public function handle($request, Closure $next)
     {
         if (Auth::check()) {
-//            dd(Auth::user()->remember_token);
             if (Auth::user()->user_role == 'Admin' || Auth::user()->user_role == 'Customer' || Auth::user()->user_role == 'Driving_instructor') {
                 return $next($request);
             }
