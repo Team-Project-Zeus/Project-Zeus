@@ -12,8 +12,14 @@ class UserController extends Controller
 
     public function index()
     {
-        Route::get('/user', function () {
-            return UserResource::collection(User::all());
-        });
+        $users = User::all();
+        return UserResource::collection($users);
+    }
+
+    public function show($id)
+    {
+        $userr = User::findOrFail($id);
+
+        return new UserResource($userr);
     }
 }
