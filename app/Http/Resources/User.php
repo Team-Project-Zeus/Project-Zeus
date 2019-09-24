@@ -23,11 +23,12 @@ class User extends JsonResource
         ];
     }
 
-    public function with($request)
-    {
-        return [
-            'version(andere functie' => '1.0.2',
-            'favorite animal' => 'cat',
-        ];
-    }
+//    public function with($request)
+//    {
+//        return [
+//            'version(andere functie' => '1.0.2',
+//            'favorite animal' => 'cat',
+//            'lievelings' => 'bami',
+//        ];
+//    }
 }
