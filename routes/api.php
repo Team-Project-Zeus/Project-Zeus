@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Route;
+use App\Http\Resources\User as UserResource;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,23 +14,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'auth.role:Admin, Default'], function () {
+    Route::get('auth/me', function (Request $request) {
+        return new UserResource($request->user());
+    });
+    Route::patch('auth/account/profile', 'Account\ProfileController@update');
+    Route::patch('auth/account/password', 'Account\PasswordController@update');
+});
+Route::group(['middleware' => 'guest:api'], function () {
+    Route::post('api/login', 'Api\LoginController@login');
+    Route::post('api/register', 'Api\RegisterController@register');
+    Route::post('api/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail');
+    Route::post('api/password/reset', 'Api\ResetPasswordController@reset');
 });
 
-//this is the route to show the data from each user.
-Route::get('/api/users', 'UserController@index');
-
-Route::get('/user/{id}', 'UserController@show');
-
-Route::group([
-
-    'middleware' => 'api',
-    'prefix' => 'auth'
-
-], function ($router) {
-    Route::post('login', 'AuthController@login');
-    Route::post('logout', 'AuthController@logout');
-    Route::post('refresh', 'AuthController@refresh');
-    Route::post('me', 'AuthController@me');
-});
+//Route::get('products', ['middleware' => 'auth.role:admin,user', 'uses' => 'ProductController@index', 'as' => 'products']);
