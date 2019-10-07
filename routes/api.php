@@ -14,6 +14,11 @@ use App\Http\Resources\User as UserResource;
 |
 */
 
+Route::get('api/appointment/student/{student}', 'ApiController@showStudent');
+
+//Route::get('api/appointment/student/{student}', 'ApiController@showDriving_Instructor');
+
+
 Route::group(['middleware' => 'auth.role:Admin, Default'], function () {
     Route::get('auth/me', function (Request $request) {
         return new UserResource($request->user());
@@ -27,5 +32,6 @@ Route::group(['middleware' => 'guest:api'], function () {
     Route::post('api/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail');
     Route::post('api/password/reset', 'Api\ResetPasswordController@reset');
 });
+
 
 //Route::get('products', ['middleware' => 'auth.role:admin,user', 'uses' => 'ProductController@index', 'as' => 'products']);
