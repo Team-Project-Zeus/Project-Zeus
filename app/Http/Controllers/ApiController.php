@@ -59,9 +59,27 @@ class ApiController extends Controller
 
 
             if ($appointments->where('student', $student)->count() === 0)
-                echo 'student has no appointment!';
+                echo 'student has no appointments!';
             else
                 return response()->json($jsondata);
+    }
+
+    public function showInstructor($instructor)
+    {
+
+        //methode 1:
+        //$appointments = appointments::where('student', '=', $student)->get();
+        //return appointmentsResource::collection($appointments);
+
+        //methode 2
+        $appointments = appointments::where('driving_instructor', '=', $instructor);
+        $jsondata = $appointments->get();
+
+
+        if ($appointments->where('driving_instructor', $instructor)->count() === 0)
+            echo 'Driving Instructor has no appointments!';
+        else
+            return response()->json($jsondata);
     }
 
     /**

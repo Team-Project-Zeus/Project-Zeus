@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\User;
 use App\Http\Resources\User as UserResource;
 /*
 |--------------------------------------------------------------------------
@@ -16,10 +17,10 @@ use App\Http\Resources\User as UserResource;
 
 Route::get('api/appointment/student/{student}', 'ApiController@showStudent');
 
-//Route::get('api/appointment/student/{student}', 'ApiController@showDriving_Instructor');
+Route::get('api/appointment/driving/instructor/{instructor}', 'ApiController@showInstructor');
 
 
-Route::group(['middleware' => 'auth.role:Admin, Default'], function () {
+Route::group(['middleware' => 'auth.role:Default'], function () {
     Route::get('auth/me', function (Request $request) {
         return new UserResource($request->user());
     });
