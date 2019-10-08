@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\appointments;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -51,8 +52,11 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
+        // haal de id uit de token,(sub). en match die met
+//        $appointments = appointments::all();
+
         return [
-            'id' => $this->id
+//            $appointments
         ];
     }
 
