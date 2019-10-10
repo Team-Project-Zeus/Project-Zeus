@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\appointments;
-use App\Http\Resources\appointments as appointmentsResource;
 
-
-
-class ApiController extends Controller
+class AppointmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -44,42 +41,12 @@ class ApiController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showStudent($student)
+    public function show($id)
     {
-
-        //methode 1:
-        //$appointments = appointments::where('student', '=', $student)->get();
-        //return appointmentsResource::collection($appointments);
-
-        //methode 2
-            $appointments = appointments::where('student', '=', $student);
-            $jsondata = $appointments->get();
-
-
-            if ($appointments->where('student', $student)->count() === 0)
-                echo 'student has no appointments!';
-            else
-                return response()->json($jsondata);
-    }
-
-    public function showInstructor($instructor)
-    {
-
-        //methode 1:
-        //$appointments = appointments::where('student', '=', $student)->get();
-        //return appointmentsResource::collection($appointments);
-
-        //methode 2
-        $appointments = appointments::where('driving_instructor', '=', $instructor);
-        $jsondata = $appointments->get();
-
-
-        if ($appointments->where('driving_instructor', $instructor)->count() === 0)
-            echo 'Driving Instructor has no appointments!';
-        else
-            return response()->json($jsondata);
+        //
     }
 
     /**
@@ -114,5 +81,45 @@ class ApiController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function showAppointmentsStudent()
+    {
+
+        //methode 1:
+        //$appointments = appointments::where('student', '=', $student)->get();
+        //return appointmentsResource::collection($appointments);
+
+        //methode 2:
+        $payload = auth()->payload();
+        $student_id = $payload->get('id');
+        $appointments = appointments::where('student', '=', $student_id);
+        $jsondata = $appointments->get();
+
+
+        if ($appointments->where('student', $student_id)->count() === 0)
+            echo 'student has no appointments!';
+        else
+            return response()->json($jsondata);
+    }
+
+    public function showAppointmentsInstructor()
+    {
+
+        //methode 1:
+        //$appointments = appointments::where('student', '=', $student)->get();
+        //return appointmentsResource::collection($appointments);
+
+        //methode 2
+
+        $instructor = JWTAuth::getPayload()->get('id');
+        $appointments = appointments::where('driving_instructor', '=', $instructor);
+        $jsondata = $appointments->get();
+
+
+        if ($appointments->where('driving_instructor', $instructor)->count() === 0)
+            echo 'Driving Instructor has no appointments!';
+        else
+            return response()->json($jsondata);
     }
 }

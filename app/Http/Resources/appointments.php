@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class appointments extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * Transf               orm the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
@@ -16,7 +16,7 @@ class appointments extends JsonResource
     {
         return [
             'id'    => $this->id,
-            'name'  => $this->driving_instructor,
+            'name' => $this->driving_instructor,
         ];
     }
 }

@@ -15,9 +15,9 @@ use App\Http\Resources\User as UserResource;
 |
 */
 
-Route::get('api/appointment/student/{student}', 'ApiController@showStudent');
+Route::get('api/appointment/student', 'AppointmentController@showAppointmentsStudent');
 
-Route::get('api/appointment/driving/instructor/{instructor}', 'ApiController@showInstructor');
+Route::get('api/appointment/driving/instructor', 'AppointmentController@showAppointmentsInstructor');
 
 
 Route::group(['middleware' => 'auth.role:Default'], function () {

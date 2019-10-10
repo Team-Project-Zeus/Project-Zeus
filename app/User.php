@@ -52,12 +52,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
-        // haal de id uit de token,(sub). en match die met
-//        $appointments = appointments::all();
-
-        return [
-//            $appointments
-        ];
+        return ['id' => $this->id];
     }
 
     /**
