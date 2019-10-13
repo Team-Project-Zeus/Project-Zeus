@@ -24,7 +24,7 @@ class AppointmentController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -35,7 +35,21 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+//        $request->validate([
+//            'name'=>'required',
+//        ]);
+//
+//        $appointment = new appointments([
+//            'name' => $request->get('name'),
+//            'student' => $request->get('student'),
+//            'Driving_instructor' => $request->get('Driving_instructor'),
+//
+//        ]);
+//
+//        $appointment->save();
+//
+//        return response()->json($appointment);
+
     }
 
     /**
@@ -85,7 +99,6 @@ class AppointmentController extends Controller
 
     public function showAppointmentsStudent()
     {
-
         //methode 1:
         //$appointments = appointments::where('student', '=', $student)->get();
         //return appointmentsResource::collection($appointments);
@@ -96,7 +109,6 @@ class AppointmentController extends Controller
         $appointments = appointments::where('student', '=', $student_id);
         $jsondata = $appointments->get();
 
-
         if ($appointments->where('student', $student_id)->count() === 0)
             echo 'student has no appointments!';
         else
@@ -105,19 +117,18 @@ class AppointmentController extends Controller
 
     public function showAppointmentsInstructor()
     {
-
         //methode 1:
         //$appointments = appointments::where('student', '=', $student)->get();
         //return appointmentsResource::collection($appointments);
 
         //methode 2
 
-        $instructor = JWTAuth::getPayload()->get('id');
-        $appointments = appointments::where('driving_instructor', '=', $instructor);
+        $payload = auth()->payload();
+        $instructor_id = $payload->get('id');
+        $appointments = appointments::where('Driving_instructor', '=', $instructor_id);
         $jsondata = $appointments->get();
 
-
-        if ($appointments->where('driving_instructor', $instructor)->count() === 0)
+        if ($appointments->where('driving_instructor', $instructor_id)->count() === 0)
             echo 'Driving Instructor has no appointments!';
         else
             return response()->json($jsondata);
