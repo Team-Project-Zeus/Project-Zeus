@@ -35,20 +35,24 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-//        $request->validate([
-//            'name'=>'required',
-//        ]);
-//
-//        $appointment = new appointments([
-//            'name' => $request->get('name'),
-//            'student' => $request->get('student'),
-//            'Driving_instructor' => $request->get('Driving_instructor'),
-//
-//        ]);
-//
-//        $appointment->save();
-//
-//        return response()->json($appointment);
+        $request->validate([
+            'driving_instructor'=>'required',
+            'student'=>'required',
+            'start_time'=>'required',
+            'end_time'=>'required'
+        ]);
+
+        $appointment = new appointments([
+            'driving_instructor' => $request->get('driving_instructor'),
+            'student' => $request->get('student'),
+            'start_time' => $request->get('start_time'),
+            'end_time' => $request->get('end_time'),
+        ]);
+
+//        dd($appointment);
+        $appointment->save();
+
+        return response()->json($appointment);
 
     }
 

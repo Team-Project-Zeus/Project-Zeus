@@ -19,6 +19,8 @@ use App\Http\Resources\User as UserResource;
 Route::get('api/appointment/student', 'AppointmentController@showAppointmentsStudent');
 //gets all appointments from a driving-instructor with the equal id from the token
 Route::get('api/appointment/driving/instructor', 'AppointmentController@showAppointmentsInstructor');
+//Add an appointment
+Route::post('api/add', 'AppointmentController@store');
 
 Route::group(['middleware' => 'auth.role:Default, Driving_instructor'], function () {
     Route::get('auth/me', function (Request $request) {
