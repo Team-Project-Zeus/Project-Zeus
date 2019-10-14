@@ -37,19 +37,24 @@ class AppointmentController extends Controller
     {
         $request->validate([
             'driving_instructor'=>'required',
-            'student'=>'required',
             'start_time'=>'required',
             'end_time'=>'required'
         ]);
 
+        $payload = auth()->payload();
+        $student_id = $payload->get('id');
+
         $appointment = new appointments([
             'driving_instructor' => $request->get('driving_instructor'),
-            'student' => $request->get('student'),
+            'student' => $request->get('student' ,$student_id),
             'start_time' => $request->get('start_time'),
             'end_time' => $request->get('end_time'),
         ]);
 
-//        dd($appointment);
+//        if ($appointment->where('student', $student_id)->count() === 0)
+//            echo 'student has no appointments!';
+//        else
+
         $appointment->save();
 
         return response()->json($appointment);
