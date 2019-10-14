@@ -46,14 +46,14 @@ class AppointmentController extends Controller
 
         $appointment = new appointments([
             'driving_instructor' => $request->get('driving_instructor'),
-            'student' => $request->get('student' ,$student_id),
+            'student' => $request->get('student', $student_id),
             'start_time' => $request->get('start_time'),
             'end_time' => $request->get('end_time'),
         ]);
 
-//        if ($appointment->where('student', $student_id)->count() === 0)
-//            echo 'student has no appointments!';
-//        else
+        if ($appointment->where('appointments' ,'=', $appointment)->count() === 0)
+            echo 'appointment already exist!';
+        else
 
         $appointment->save();
 
@@ -101,9 +101,17 @@ class AppointmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy()
     {
-        //
+
+//        $appointments = appointments::where('id');
+//
+//        $product = appointments::find($appointments);
+//        $product->delete();
+//
+//        return response()->json($product);
+
+
     }
 
     public function showAppointmentsStudent()

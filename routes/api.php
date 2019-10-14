@@ -21,6 +21,9 @@ Route::get('api/appointment/student', 'AppointmentController@showAppointmentsStu
 Route::get('api/appointment/driving/instructor', 'AppointmentController@showAppointmentsInstructor');
 //Add an appointment
 Route::post('api/add', 'AppointmentController@store');
+//delete an appointment
+Route::delete('api/delete', 'AppointmentController@destroy');
+
 
 Route::group(['middleware' => 'auth.role:Default, Driving_instructor'], function () {
     Route::get('auth/me', function (Request $request) {
