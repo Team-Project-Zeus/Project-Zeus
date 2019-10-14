@@ -66,17 +66,16 @@ class LoginController extends Controller
      */
     protected function sendLoginResponse(Request $request)
     {
-        $this->clearLoginAttempts($request);
+         $this->clearLoginAttempts($request);
+         $token = (string)$this->guard()->getToken();
+         $expiration = $this->guard()->getPayload()->get('exp');
 
-        $token = (string) $this->guard()->getToken();
-        $expiration = $this->guard()->getPayload()->get('exp');
-
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => $expiration - time(),
-        ]);
-    }
+         return response()->json([
+             'token' => $token,
+             'token_type' => 'bearer',
+             'expires_in' => $expiration - time(),
+         ]);
+     }
 
     /**
      * Get the failed login response instance.
