@@ -22,7 +22,9 @@ Route::get('api/appointment/driving/instructor', 'AppointmentController@showAppo
 //Add an appointment
 Route::post('api/add', 'AppointmentController@store');
 //delete an appointment
-Route::delete('api/delete', 'AppointmentController@destroy');
+Route::delete('api/delete/{appointment_id}', 'AppointmentController@destroy');
+//update an appointment
+Route::patch('api/edit/{appointment_id}', 'AppointmentController@update');
 
 
 Route::group(['middleware' => 'auth.role:Default, Driving_instructor'], function () {

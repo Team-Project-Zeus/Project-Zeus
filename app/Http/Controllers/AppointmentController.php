@@ -18,16 +18,6 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -51,14 +41,13 @@ class AppointmentController extends Controller
             'end_time' => $request->get('end_time'),
         ]);
 
-        if ($appointment->where('appointments' ,'=', $appointment)->count() === 0)
-            echo 'appointment already exist!';
-        else
-
-        $appointment->save();
-
-        return response()->json($appointment);
-
+//        if ($appointment->where('id' ,'=', $appointment)->count() === 0) {
+////            echo 'appointment already exist!';
+////        }
+////        else {
+            $appointment->save();
+            return response()->json($appointment);
+//        }
     }
 
     /**
@@ -71,18 +60,6 @@ class AppointmentController extends Controller
     {
         //
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -90,9 +67,30 @@ class AppointmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $appointment_id)
     {
-        //
+        $payload = auth()->payload();
+        $student_id = $payload->get('id');
+
+        $request->validate([
+            'driving_instructor'=>'required',
+            'start_time'=>'required',
+            'end_time'=>'required'
+        ]);
+
+        $product = appointments::find($appointment_id);
+
+        $product->driving_instructor = $request->driving_instructor;
+        $product->start_time = $request->start_time;
+        $product->end_time = $request->end_time;
+
+        if ($product['student'] == $student_id ) {
+            $product->save();
+            return response()->json($product);
+        }
+        else {
+            return response()->json('not authorized' ,403);
+        }
     }
 
     /**
@@ -101,17 +99,21 @@ class AppointmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy()
+    public function destroy($appointment_id)
     {
-
-//        $appointments = appointments::where('id');
-//
-//        $product = appointments::find($appointments);
-//        $product->delete();
-//
-//        return response()->json($product);
+        $payload = auth()->payload();
+        $student_id = $payload->get('id');
 
 
+        $product = appointments::find($appointment_id);
+
+        if ($product['student'] == $student_id ) {
+            $product->delete();
+            return response()->json($product);
+        }
+        else {
+            return response()->json('not authorized' ,403);
+        }
     }
 
     public function showAppointmentsStudent()
