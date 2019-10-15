@@ -22,5 +22,14 @@ steps:
     php -version
   displayName: 'Use PHP version $(phpVersion)'
 
+
 - script: composer install --no-interaction --prefer-dist
   displayName: 'composer install'
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'project-zeus - Azure'
+    appType: 'webApp'
+    WebAppName: 'project-zeus'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
