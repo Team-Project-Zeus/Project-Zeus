@@ -15,17 +15,18 @@ use App\Http\Resources\User as UserResource;
 |
 */
 
+Route::group(['middleware' => 'CheckUserRole'], function () {
 //gets all appointments from a student with the equal id from the token
-Route::get('api/appointment/student', 'AppointmentController@showAppointmentsStudent');
+    Route::get('api/appointment/student', 'AppointmentController@showAppointmentsStudent');
 //gets all appointments from a driving-instructor with the equal id from the token
-Route::get('api/appointment/driving/instructor', 'AppointmentController@showAppointmentsInstructor');
+    Route::get('api/appointment/driving/instructor', 'AppointmentController@showAppointmentsInstructor');
 //Add an appointment
-Route::post('api/add', 'AppointmentController@store');
+    Route::post('api/appointment/add', 'AppointmentController@store');
 //delete an appointment
-Route::delete('api/delete/{appointment_id}', 'AppointmentController@destroy');
+    Route::delete('api/appointment/delete/{appointment_id}', 'AppointmentController@destroy');
 //update an appointment
-Route::patch('api/edit/{appointment_id}', 'AppointmentController@update');
-
+    Route::patch('api/appointment/edit/{appointment_id}', 'AppointmentController@update');
+});
 
 Route::group(['middleware' => 'auth.role:Default, Driving_instructor'], function () {
     Route::get('auth/me', function (Request $request) {
