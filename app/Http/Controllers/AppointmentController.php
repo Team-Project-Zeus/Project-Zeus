@@ -36,8 +36,8 @@ class AppointmentController extends Controller
         ]);
 
         $appointment->save();
-        return response()->json($appointment);
 
+        return response()->json($appointment);
         //if ($appointment->where('id' ,'=', $appointment)->count() === 0) {
         //echo 'appointment already exist!';
     }
@@ -66,8 +66,7 @@ class AppointmentController extends Controller
         if ($product['student'] == $this->student_id ) {
             $product->save();
             return response()->json($product);
-        }
-        else {
+        }else{
             return response()->json('wrong appointment',403);
         }
     }
@@ -82,8 +81,7 @@ class AppointmentController extends Controller
         if ($product['student'] == $student_id ) {
             $product->delete();
             return response()->json($product);
-        }
-        else {
+        }else {
             return response()->json('not authorized' ,403);
         }
     }
@@ -98,10 +96,11 @@ class AppointmentController extends Controller
         $appointments = appointments::where('student', '=', $this->student_id);
         $jsondata = $appointments->get();
 
-        if ($appointments->where('student', $this->student_id)->count() === 0)
+        if ($appointments->where('student', $this->student_id)->count() === 0){
             echo 'student has no appointments!';
-        else
+        }else {
             return response()->json($jsondata);
+        }
     }
 
     public function showAppointmentsInstructor()
@@ -117,9 +116,10 @@ class AppointmentController extends Controller
         $appointments = appointments::where('Driving_instructor', '=', $instructor_id);
         $jsondata = $appointments->get();
 
-        if ($appointments->where('driving_instructor', $instructor_id)->count() === 0)
+        if ($appointments->where('driving_instructor', $instructor_id)->count() === 0) {
             echo 'Driving Instructor has no appointments!';
-        else
+        }else {
             return response()->json($jsondata);
+        }
     }
 }

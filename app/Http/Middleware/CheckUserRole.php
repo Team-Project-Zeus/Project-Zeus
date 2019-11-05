@@ -23,5 +23,6 @@ class CheckUserRole
             return $next($request);
         }else{
             return response()->json('You dont have the right role', 403);
-        }    }
+        }
+    }
 }
