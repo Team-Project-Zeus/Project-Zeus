@@ -20,6 +20,9 @@ class CreateAppointmentsTable extends Migration
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->timestamps();
+
+            $table->foreign('driving_instructor')->references('id')->on('users');
+            $table->foreign('student')->references('id')->on('users');
         });
     }
 
