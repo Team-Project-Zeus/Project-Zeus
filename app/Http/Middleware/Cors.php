@@ -10,7 +10,7 @@ class Cors
     {
         $response = $next($request);
 
-        $response->header('Access-Control-Allow-Origin:', 'http://projectzeusfrontend.herokuapp.com');
+        $response->header('Access-Control-Allow-Origin', 'http://projectzeusfrontend.herokuapp.com');
 
         return $response;
     }
