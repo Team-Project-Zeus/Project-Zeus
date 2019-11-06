@@ -14,7 +14,7 @@ class AddRolesToUser extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('user_role', ['Default', 'Customer', 'Driving_instructor', 'Admin'])->default('Default');
+            $table->enum('user_role', ['default', 'student', 'driving_instructor', 'admin'])->default('default');
         });
     }
 
