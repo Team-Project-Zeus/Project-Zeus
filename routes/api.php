@@ -17,24 +17,24 @@ use App\Http\Resources\User as UserResource;
 
 Route::group(['middleware' => 'CheckUserRole'], function () {
 //gets all appointments from a student with the equal id from the token
-    Route::get('/appointments/student', 'AppointmentController@showAppointmentsStudent');
+    Route::get('/api/appointments/student', 'AppointmentController@showAppointmentsStudent');
 //gets all appointments from a driving-instructor with the equal id from the token
-    Route::get('/appointments/instructor', 'AppointmentController@showAppointmentsInstructor');
+    Route::get('/api/appointments/instructor', 'AppointmentController@showAppointmentsInstructor');
 //This is an api resource route for the CRUD-systeem appointment
-    Route::apiResource('/appointments', 'AppointmentController');
+    Route::apiResource('/api/appointments', 'AppointmentController');
 });
 
 //Route::group(['middleware' => 'auth.role:default, student, driving_instructor'], function () {
-    Route::get('auth/me', function (Request $request) {
+    Route::get('/api/me', function (Request $request) {
         return new UserResource($request->user());
     });
-    Route::patch('auth/account/profile', 'Account\ProfileController@update');
-    Route::patch('auth/account/password', 'Account\PasswordController@update');
+    Route::patch('/api/profile', 'Account\ProfileController@update');
+    Route::patch('/api/password', 'Account\PasswordController@update');
 //});
 
 Route::group(['middleware' => 'guest:api'], function () {
-    Route::post('api/login', 'Api\LoginController@login');
-    Route::post('api/register', 'Api\RegisterController@register');
-    Route::post('api/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail');
-    Route::post('api/password/reset', 'Api\ResetPasswordController@reset');
+    Route::post('/api/login', 'Api\LoginController@login');
+    Route::post('/api/register', 'Api\RegisterController@register');
+    Route::post('/api/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail');
+    Route::post('/api/password/reset', 'Api\ResetPasswordController@reset');
 });
