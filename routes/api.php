@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\User;
 use App\Http\Resources\User as UserResource;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
