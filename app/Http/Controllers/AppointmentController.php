@@ -23,14 +23,14 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'driving_instructor' => 'required',
+            'student' => 'required',
             'start_time' => 'required',
             'end_time' => 'required'
         ]);
 
         $appointment = new appointments([
-            'driving_instructor' => $request->get('driving_instructor'),
-            'student' => $request->get('student', $this->student_id),
+            'driving_instructor' => $request->get('driving_instructor',  $this->student_id),
+            'student' => $request->get('student'),
             'start_time' => $request->get('start_time'),
             'end_time' => $request->get('end_time'),
         ]);

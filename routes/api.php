@@ -16,7 +16,14 @@ use App\Http\Resources\User as UserResource;
 |
 */
 
-Route::group(['middleware' => 'CheckUserRole'], function () {
+
+
+//Route::group(['middleware' => 'check.role.driving_instructor'], function () {
+    Route::apiResource('/api/availability', 'AvailabilityController');
+//});
+
+
+Route::group(['middleware' => 'check.role.student'], function () {
 //gets all appointments from a student with the equal id from the token
     Route::get('/api/appointments/student', 'AppointmentController@showAppointmentsStudent');
 //gets all appointments from a driving-instructor with the equal id from the token
