@@ -23,23 +23,58 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'driving_instructor' => 'required',
+            'status' => 'required',
             'start_time' => 'required',
             'end_time' => 'required'
         ]);
 
-        $appointment = new appointments([
-            'driving_instructor' => $request->get('driving_instructor'),
-            'student' => $request->get('student', $this->student_id),
-            'start_time' => $request->get('start_time'),
-            'end_time' => $request->get('end_time'),
-        ]);
+        $end = strtotime($request->end_time);
+        $start = strtotime($request->start_time);
+        $nextWeek = $end- $start;
+        $nextWeekkk = 1800;
+        $halfhours = ($nextWeek / $nextWeekkk);
 
-        $appointment->save();
 
+        for ($i = 1; $i <= $halfhours; $i++) {
+
+
+            $appointment = new appointments([
+                'driving_instructor' => $request->get('driving_instructor',  $this->student_id),
+                'student' => $request->get('student'),
+                'status' => $request->get('status'),
+                'description' => $request->get('description'),
+                'start_time' => $request->get('start_time'),
+                'end_time' => $request->get('end_time')
+            ]);
+            $time = ((($i - 1) * 30));
+            $addTime = "PT";
+            $addTime.= strval($time);
+            $addTime.= "M";
+//            dd($addTime);
+            $date = new \DateTime($appointment->start_time);
+            $date->add(new \DateInterval(strval($addTime)));
+//            dd();
+            $appointment->start_time = $date->format('Y-m-d H:i:s');;
+
+//            dd();
+            $date->add(new \DateInterval('PT30M'));
+//            dd($date);
+            $appointment->end_time = $date->format('Y-m-d H:i:s');;
+//            dd($appointment);
+//            $test = DateTime::createFromFormat('Y/m/d H:i:s', strtotime($appointment->start_time));
+//            $test->add(new DateInterval('I30'));
+//            dd($date);
+
+//            $appointment->start_time->add(new DateInterval($addTime));
+//            $appointment->end_time->add(new DateInterval('I30'));
+
+            $appointment->save();
+
+//            if ($appointment->where('id' ,'=', $appointment)->count() === 0) {
+//            echo 'appointment already exist!';
+        }
         return response()->json($appointment);
-        //if ($appointment->where('id' ,'=', $appointment)->count() === 0) {
-        //echo 'appointment already exist!';
+
     }
 
    /**
