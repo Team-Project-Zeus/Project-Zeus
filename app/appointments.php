@@ -11,4 +11,8 @@ class appointments extends Model
     protected $fillable = [
         'driving_instructor', 'student', 'description','status', 'start_time', 'end_time'
     ];
+
+    public function test() {
+        return 'test';
+    }
 }

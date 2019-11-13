@@ -29,8 +29,9 @@ class CheckUserRole
             }else{
                 return response()->json('You dont have the right role', 403);
             }
-        }else{
-            return response()->json('You dont have the right role', 403);
+        }else if($user_role != 'default'){
+            return $next($request);
+//            return response()->json('You dont have the right role', 403);
         }
     }
 }

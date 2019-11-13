@@ -15,15 +15,17 @@ use App\Http\Resources\User as UserResource;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::patch('/api/appointment/edit', 'AppointmentController@update');
+Route::delete('/api/appointment/delete', 'AppointmentController@destroy');
 
+Route::apiResource('/api/appointments', 'AppointmentController');
 
-Route::group([/*'middleware' => 'check.role.student'*/], function () {
+Route::group(['middleware' => 'check.role'], function () {
 //gets all appointments from a student with the equal id from the token
     Route::get('/api/appointments/student', 'AppointmentController@showAppointmentsStudent');
 //gets all appointments from a driving-instructor with the equal id from the token
     Route::get('/api/appointments/instructor', 'AppointmentController@showAppointmentsInstructor');
 //This is an api resource route for the CRUD-systeem appointment
-    Route::apiResource('/api/appointments', 'AppointmentController');
 });
 
 //Route::group(['middleware' => 'auth.role:default, student, driving_instructor'], function () {

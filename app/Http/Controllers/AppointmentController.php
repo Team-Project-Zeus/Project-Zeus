@@ -7,11 +7,11 @@ use App\appointments;
 
 class AppointmentController extends Controller
 {
-    private $student_id;
+    private $user_id;
 
     public function __construct(){
         $payload = auth()->payload();
-        $this->student_id= $payload->get('id');
+        $this->user_id = $payload->get('id');
     }
 
     /**
@@ -22,59 +22,51 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'status' => 'required',
-            'start_time' => 'required',
-            'end_time' => 'required'
-        ]);
+        $payload = auth()->payload();
+        $user_role = $payload->get('user_role');
 
-        $end = strtotime($request->end_time);
-        $start = strtotime($request->start_time);
-        $nextWeek = $end- $start;
-        $nextWeekkk = 1800;
-        $halfhours = ($nextWeek / $nextWeekkk);
-
-
-        for ($i = 1; $i <= $halfhours; $i++) {
-
-
-            $appointment = new appointments([
-                'driving_instructor' => $request->get('driving_instructor',  $this->student_id),
-                'student' => $request->get('student'),
-                'status' => $request->get('status'),
-                'description' => $request->get('description'),
-                'start_time' => $request->get('start_time'),
-                'end_time' => $request->get('end_time')
+        if ($user_role === 'driving_instructor') {
+            $request->validate([
+                'description' => 'required',
+                'status' => 'required',
+                'start_time' => 'required',
+                'end_time' => 'required',
             ]);
-            $time = ((($i - 1) * 30));
-            $addTime = "PT";
-            $addTime.= strval($time);
-            $addTime.= "M";
-//            dd($addTime);
-            $date = new \DateTime($appointment->start_time);
-            $date->add(new \DateInterval(strval($addTime)));
-//            dd();
-            $appointment->start_time = $date->format('Y-m-d H:i:s');;
 
-//            dd();
-            $date->add(new \DateInterval('PT30M'));
-//            dd($date);
-            $appointment->end_time = $date->format('Y-m-d H:i:s');;
-//            dd($appointment);
-//            $test = DateTime::createFromFormat('Y/m/d H:i:s', strtotime($appointment->start_time));
-//            $test->add(new DateInterval('I30'));
-//            dd($date);
+            $end = strtotime($request->end_time);
+            $start = strtotime($request->start_time);
+            $nextWeek = $end - $start;
+            $nextWeekkk = 1800;
+            $halfhours = ($nextWeek / $nextWeekkk);
 
-//            $appointment->start_time->add(new DateInterval($addTime));
-//            $appointment->end_time->add(new DateInterval('I30'));
+            for ($i = 1; $i <= $halfhours; $i++) {
+                $appointment = new appointments([
+                    'driving_instructor' => $this->user_id,
+                    'student' => $request->get('student'),
+                    'status' => $request->get('status'),
+                    'description' => $request->get('description'),
+                    'start_time' => $request->get('start_time'),
+                    'end_time' => $request->get('end_time')
+                ]);
 
-            $appointment->save();
+                $time = ((($i - 1) * 30));
+                $addTime = "PT" . strval($time) . "M";
+                $date = new \DateTime($appointment->start_time);
+                $date->add(new \DateInterval(strval($addTime)));
+                $appointment->start_time = $date->format('Y-m-d H:i:s');;
+                $date->add(new \DateInterval('PT30M'));
+                $appointment->end_time = $date->format('Y-m-d H:i:s');;
+            }
+            if ($appointment->where('id', '=', $appointment)->count() === 0) {
 
-//            if ($appointment->where('id' ,'=', $appointment)->count() === 0) {
-//            echo 'appointment already exist!';
+                $appointment->save();
+                return response()->json($appointment);
+            } else {
+                echo 'Appointment already exists';
+            }
+        }else{
+            echo 'You dont have the right permission';
         }
-        return response()->json($appointment);
-
     }
 
    /**
@@ -84,40 +76,98 @@ class AppointmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $appointment_id)
+    public function update(Request $request)
     {
         $request->validate([
-            'driving_instructor'=>'required',
-            'start_time'=>'required',
-           'end_time'=>'required'
+            'id' => 'required',
         ]);
 
-        $product = appointments::find($appointment_id);
+        $payload = auth()->payload();
+        $id = $request->id;
+        $user_role = $payload->get('user_role');
+        $appointment = appointments::find($id[0]);
 
-        $product->driving_instructor = $request->driving_instructor;
-        $product->start_time = $request->start_time;
-        $product->end_time = $request->end_time;
+        if ($user_role == 'driving_instructor') {
 
-        if ($product['student'] == $this->student_id ) {
-            $product->save();
-            return response()->json($product);
-        }else{
-            return response()->json('wrong appointment',403);
+            $request->validate([
+                'student' => 'required',
+                'status' => 'required',
+                'description' => 'required'
+            ]);
+
+            if ($appointment['student'] == null) {
+                $appointment['student'] =  $this->user_id;
+                $appointment['status'] =  $request->status;
+
+                $appointment->save();
+                return response()->json($appointment);
+            }
+            else if ($appointment['student'] == $this->user_id) {
+                $appointment['student'] =  $this->user_id;
+                $appointment['status'] =  $request->status;
+
+                $appointment->save();
+                return response()->json($appointment);
+            } else {
+                return response()->json('wrong appointment', 403);
+            }
+
+        }else if ($user_role != 'default' || 'driving_instructor'){
+
+            if ($appointment['student'] == null) {
+                $appointment['student'] =  $this->user_id;
+                $appointment['status'] =  $request->status;
+
+                $appointment->save();
+                return response()->json($appointment);
+            }
+            if ($appointment['student'] == $this->user_id) {
+                $appointment['status'] =  $request->status;
+                $appointment->save();
+                return response()->json($appointment);
+            } else {
+                return response()->json('wrong appointment', 403);
+            }
         }
+
     }
 
-    public function destroy($appointment_id)
+    public function destroy(Request $request)
     {
         $payload = auth()->payload();
-        $student_id = $payload->get('id');
+        $user_role = $payload->get('user_role');
+        $id = $request->id;
+        $appointment = appointments::find($id[0]);
 
-        $product = appointments::find($appointment_id);
+        if ($user_role == 'driving_instructor') {
+            if ($appointment['student'] == $this->user_id) {
+                $appointment->delete();
 
-        if ($product['student'] == $student_id ) {
-            $product->delete();
-            return response()->json($product);
-        }else {
-            return response()->json('not authorized' ,403);
+                return response()->json($appointment);
+            }
+            if ($appointment['student'] == null) {
+                $appointment->delete();
+                return response()->json($appointment);
+            } else {
+                return response()->json('wrong appointment', 403);
+            }
+        } else if ($user_role != 'default' || 'driving_instructor'){
+
+            if ($appointment['student'] == null) {
+
+                $appointment->update();
+                return response()->json($appointment);
+            }
+            if ($appointment['student'] == $this->user_id) {
+                $appointment['status'] = 'available';
+                $appointment['student']  = NULL;
+
+                $appointment->update();
+
+                return response()->json($appointment);
+            } else {
+                return response()->json('wrong appointment', 403);
+            }
         }
     }
 
