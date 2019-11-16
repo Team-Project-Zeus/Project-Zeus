@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\appointments;
+use App\Appointment;
 use App\User;
 
 use Closure;
@@ -29,7 +29,7 @@ class CheckUserRole
             }else{
                 return response()->json('You dont have the right role', 403);
             }
-        }else if($user_role != 'default'){
+        }else if($user_role == 'student'){
             return $next($request);
 //            return response()->json('You dont have the right role', 403);
         }
