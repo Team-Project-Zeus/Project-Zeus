@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use function Composer\Autoload\includeFile;
 use Illuminate\Http\Request;
 use App\Appointment;
+use Illuminate\Support\Facades\App;
 
 class AppointmentController extends Controller
 {
@@ -18,6 +20,7 @@ class AppointmentController extends Controller
     {
         $payload = auth()->payload();
         $user_role = $payload->get('user_role');
+        $allAppointments = Appointment::all();
 
         if ($user_role === 'driving_instructor') {
             $request->validate([
@@ -47,19 +50,35 @@ class AppointmentController extends Controller
                 $addTime = "PT" . strval($time) . "M";
                 $date = new \DateTime($appointment->start_time);
                 $date->add(new \DateInterval(strval($addTime)));
-                $appointment->start_time = $date->format('Y-m-d H:i:s');;
+                $appointment->start_time = $date->format('Y-m-d H:i:s');
                 $date->add(new \DateInterval('PT30M'));
-                $appointment->end_time = $date->format('Y-m-d H:i:s');;
-            }
-            if ($appointment->where('id', $appointment)->count() == 0) {
-//ik was hier als laaste ben nu bezig met de if-exist chexk
-dd($appointment->where('id', '!=' ,$appointment)->count().'     pieppieppiep');
+                $appointment->end_time = $date->format('Y-m-d H:i:s');
+//                if ($appointment->where('id', $appointment)->count() == 0) {
+                //ik was hier als laaste ben nu bezig met de if-exist chexk
+//                if ($appointment->where('id', '==', $allAppointments)->count() === 0) {
+
+//$check = $appointment->where('id', '===', $allAppointments)->count() === 0;
+//                    dd($check);
+//                    if ($check === true){
+
+//                if ( Appointment::where($appointment, '==',$allAppointments)->count() === 0){
+//                    echo 'exists';
+//                }else{
+//                    echo 'doesnot exists';
+//                }
+
+//die();
                 $appointment->save();
-                return response()->json($appointment);
-            } else {
-                echo 'Appointment already exists';
+//                }else{
+//                        echo 'Appointment already exists';
             }
-        }else{
+                return response()->json($appointment);
+//            }
+//        else{
+//            echo 'Appointment already exists';
+//        }
+            }
+        else{
             echo 'You dont have the right permission';
         }
     }
@@ -132,7 +151,7 @@ dd($appointment->where('id', '!=' ,$appointment)->count().'     pieppieppiep');
         $id = $request->id;
         $appointment = Appointment::find($id[0]);
 
-        if ($user_role == 'driving_instructor') {
+        if ($user_role === 'driving_instructor') {
             if ($appointment['student'] == $this->user_id) {
                 $appointment->delete();
 
@@ -140,6 +159,7 @@ dd($appointment->where('id', '!=' ,$appointment)->count().'     pieppieppiep');
             }
             if ($appointment['student'] == null) {
                 $appointment->delete();
+
                 return response()->json($appointment);
             } else {
                 return response()->json('wrong appointment', 403);
@@ -148,6 +168,7 @@ dd($appointment->where('id', '!=' ,$appointment)->count().'     pieppieppiep');
 
             if ($appointment['student'] == null) {
                 $appointment->update();
+
                 return response()->json($appointment);
             }
             if ($appointment['student'] == $this->user_id) {
