@@ -11,10 +11,11 @@ class Appointment extends Model
     public $table = "appointments";
 
     protected $fillable = [
-        'driving_instructor', 'student', 'description','status', 'start_time', 'end_time'
+        'driving_instructor', 'student', 'description','status', 'start_time', 'end_time', 'id'
     ];
 
-    public function test() {
-        return 'test';
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'driving_instructor', 'id');
     }
 }

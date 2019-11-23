@@ -68,4 +68,10 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'driving_instructor');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use function Composer\Autoload\includeFile;
 use Illuminate\Http\Request;
 use App\Appointment;
+use App\User;
 use Illuminate\Support\Facades\App;
 
 class AppointmentController extends Controller
@@ -20,7 +21,6 @@ class AppointmentController extends Controller
     {
         $payload = auth()->payload();
         $user_role = $payload->get('user_role');
-        $allAppointments = Appointment::all();
 
         if ($user_role === 'driving_instructor') {
             $request->validate([
@@ -53,30 +53,18 @@ class AppointmentController extends Controller
                 $appointment->start_time = $date->format('Y-m-d H:i:s');
                 $date->add(new \DateInterval('PT30M'));
                 $appointment->end_time = $date->format('Y-m-d H:i:s');
-//                if ($appointment->where('id', $appointment)->count() == 0) {
-                //ik was hier als laaste ben nu bezig met de if-exist chexk
-//                if ($appointment->where('id', '==', $allAppointments)->count() === 0) {
 
-//$check = $appointment->where('id', '===', $allAppointments)->count() === 0;
-//                    dd($check);
-//                    if ($check === true){
+//                $appointmentss = Appointment::where([
+//                    ['driving_instructor', '==', '1'],
+//                    ['student', '==', '1'],
+//                    ['start_time', '==', '1'],
+//                    ['end_time', '==', '1'],
+//                ])->get();
+//                dd($appointmentss);
 
-//                if ( Appointment::where($appointment, '==',$allAppointments)->count() === 0){
-//                    echo 'exists';
-//                }else{
-//                    echo 'doesnot exists';
-//                }
-
-//die();
                 $appointment->save();
-//                }else{
-//                        echo 'Appointment already exists';
             }
                 return response()->json($appointment);
-//            }
-//        else{
-//            echo 'Appointment already exists';
-//        }
             }
         else{
             echo 'You dont have the right permission';
@@ -194,10 +182,13 @@ class AppointmentController extends Controller
         $appointments = Appointment::where('student', '=', $this->user_id);
         $jsondata = $appointments->get();
 
+//        $test = Appointment::find($jsondata[0]['id'])->user;
+        $test = Appointment::where('id' , $jsondata[0]['id'])->first();
+
         if ($appointments->where('student', $this->user_id)->count() === 0){
             echo 'student has no appointments!';
         }else {
-            return response()->json($jsondata);
+            return response()->json($jsondata).$test;
         }
     }
 
@@ -209,10 +200,18 @@ class AppointmentController extends Controller
 
         //methode 2
 
+//        $test = Appointment::find(4)->user;
+
+//        $test->user[1]->name;
+
+//        return $test;
         $appointments = Appointment::where('Driving_instructor', '=', $this->user_id);
         $jsondata = $appointments->get();
+//        dd($jsondata);
 
-        if ($appointments->where('driving_instructor', $this->user_id)->count() === 0) {
+//        $test = Appointment::find($jsondata[0]['id'])->user;
+
+        if ($appointments->where('driving_instructor', $this->user_id)->count() == 0) {
             echo 'Driving Instructor has no appointments!';
         }else {
             return response()->json($jsondata);

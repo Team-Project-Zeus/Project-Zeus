@@ -21,16 +21,14 @@ class CheckUserRoleDrivingInstructor
         $user_role = $payload->get('user_role');
         $student = User::where('id', '=', $request->student)->first();
 
+//        dd($student);
         if ($user_role === 'driving_instructor') {
-            if ($student->user_role === 'student') {
+            if ($student['user_role'] === 'student' or $student['user_role'] === null) {
                 return $next($request);
             }else{
-                return response()->json('You dont have the right role', 403);
+                return response()->json('The student is not right.', 403);
             }
         }
-//        else if($user_role == 'student'){
-//            return $next($request);
-        return response()->json('You dont have the right role', 403);
-//        }
+        return response()->json('You dont have the right role.', 403);
     }
 }
