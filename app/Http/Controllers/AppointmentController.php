@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Appointment;
 use App\User;
 use Illuminate\Support\Facades\App;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class AppointmentController extends Controller
 {
@@ -182,13 +184,37 @@ class AppointmentController extends Controller
         $appointments = Appointment::where('student', '=', $this->user_id);
         $jsondata = $appointments->get();
 
-//        $test = Appointment::find($jsondata[0]['id'])->user;
-        $test = Appointment::where('id' , $jsondata[0]['id'])->first();
+//         use this to get the last 5 appointments
+//        $dogs = Dogs::orderBy('id', 'desc')->take(5)->get();
+
+//        this one works but with the first user, it doesnot take all the users.
+//        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+//        "$test[0]['name']" this is how you take the data from the record
+
+        //works fine but wit out the relationship
+//        $test = Appointment::where('student' , $jsondata[0]['student'])->get();
+//        $comment = App\Post::find(1)->comments()->where('title', 'foo')->first();
+
+        //pakt alleen de eerste
+//        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+
+
+//
+        $test = Appointment::find($jsondata[0]['id']);
+        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+
+        //try this for all
+//        $test = Appointment::where('id' , $jsondata[0]['id'])->get();
+//        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+
+
+//        dd($test);
+
 
         if ($appointments->where('student', $this->user_id)->count() === 0){
             echo 'student has no appointments!';
         }else {
-            return response()->json($jsondata).$test;
+            return response()->json(array($jsondata ,$test['user']));
         }
     }
 
