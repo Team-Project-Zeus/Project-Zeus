@@ -181,10 +181,8 @@ class AppointmentController extends Controller
         //return appointmentsResource::collection($appointments);
 
         //methode 2:
-        $appointments = Appointment::where('student', '=', $this->user_id);
-        $jsondata = $appointments->get();
 
-//         use this to get the last 5 appointments
+        //         use this to get the last 5 appointments
 //        $dogs = Dogs::orderBy('id', 'desc')->take(5)->get();
 
 //        this one works but with the first user, it doesnot take all the users.
@@ -197,6 +195,14 @@ class AppointmentController extends Controller
 
         //pakt alleen de eerste
 //        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+
+
+
+
+
+        $appointments = Appointment::where('student', '=', $this->user_id);
+        $jsondata = $appointments->get();
+
 
         foreach ($jsondata as $m){
             $m->user->where('id' , $m->driving_instructor)->get();
@@ -217,16 +223,8 @@ class AppointmentController extends Controller
 
         //methode 2
 
-//        $test = Appointment::find(4)->user;
-
-//        $test->user[1]->name;
-
-//        return $test;
         $appointments = Appointment::where('Driving_instructor', '=', $this->user_id);
         $jsondata = $appointments->get();
-//        dd($jsondata);
-
-//        $test = Appointment::find($jsondata[0]['id'])->user;
 
         if ($appointments->where('driving_instructor', $this->user_id)->count() == 0) {
             echo 'Driving Instructor has no appointments!';
@@ -236,24 +234,55 @@ class AppointmentController extends Controller
     }
 
     public function todaysAppointment(){
-        $appointments = Appointment::where('student', '=', $this->user_id);
+
+//        $appointments = Appointment::where('driving_instructor', $this->user_id);
+//        $jsondata = $appointments->get();
+//
+//        $test = Appointment::find($jsondata[0]['id']);
+//        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+//        $date = date('Y-m-d');
+//
+//        $q = Appointment::where('start_time', 4)->get();
+//
+//
+//        //        foreach ($jsondata as $m){
+////             $m->user->where('id' , $m->driving_instructor)->get();
+////        }
+//
+//        dd($q);
+//
+//        if ($q > 0){
+//            return 'welcome' . ' '.$jsondata[0]['name'].' '. 'todays your appointmemt';
+//        }else{
+//            return 'Vandaag heeft u geen Appoinment';
+//        }
+
+
+
+
+        $appointments = Appointment::where('driving_instructor', '=', $this->user_id);
         $jsondata = $appointments->get();
+
         $test = Appointment::find($jsondata[0]['id']);
         $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+
         $date = date('Y-m-d');
 
+        $data = Appointment::whereRaw("(DATE_FORMAT(start_time,'%Y-%m-%d'))" , [$date])->get();
 
-        $q = Appointment::where('start_time', $date)->count();
-        if ($q > 0){
+        dd($data);
+//        return $data;
+        if ($data > 0){
             return 'welcome' . ' '.  $test['user']->name .' '. 'todays your appointmemt';
         }else{
             return 'Vandaag heeft u geen Appoinment';
+
         }
     }
 
     public function getAvailability(){
         $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reseverd'], ['student' , NULL]])->get();
 
-        return response()->json($appointments);e
+        return response()->json($appointments);
     }
 }
