@@ -8,15 +8,18 @@ use App\Appointment;
 use App\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Builder;
+use DB;
 
 
 class AppointmentController extends Controller
 {
     private $user_id;
+    private $user_role;
 
     public function __construct(){
         $payload = auth()->payload();
         $this->user_id = $payload->get('id');
+        $this->user_role = $payload->get('user_role');
     }
 
     public function store(Request $request)
@@ -203,7 +206,6 @@ class AppointmentController extends Controller
         $appointments = Appointment::where('student', '=', $this->user_id);
         $jsondata = $appointments->get();
 
-
         foreach ($jsondata as $m){
             $m->user->where('id' , $m->driving_instructor)->get();
         }
@@ -234,49 +236,20 @@ class AppointmentController extends Controller
     }
 
     public function todaysAppointment(){
-
-//        $appointments = Appointment::where('driving_instructor', $this->user_id);
-//        $jsondata = $appointments->get();
-//
-//        $test = Appointment::find($jsondata[0]['id']);
-//        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
-//        $date = date('Y-m-d');
-//
-//        $q = Appointment::where('start_time', 4)->get();
-//
-//
-//        //        foreach ($jsondata as $m){
-////             $m->user->where('id' , $m->driving_instructor)->get();
-////        }
-//
-//        dd($q);
-//
-//        if ($q > 0){
-//            return 'welcome' . ' '.$jsondata[0]['name'].' '. 'todays your appointmemt';
-//        }else{
-//            return 'Vandaag heeft u geen Appoinment';
-//        }
-
-
-
-
-        $appointments = Appointment::where('driving_instructor', '=', $this->user_id);
-        $jsondata = $appointments->get();
-
-        $test = Appointment::find($jsondata[0]['id']);
-        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
-
         $date = date('Y-m-d');
 
-        $data = Appointment::whereRaw("(DATE_FORMAT(start_time,'%Y-%m-%d'))" , [$date])->get();
+        if ($this->user_role === 'driving_instructor') {
+            $appointments = Appointment::where('driving_instructor', $this->user_id)->where(\DB::raw("(DATE_FORMAT(start_time,'%Y-%m-%d'))"), $date)->get();
+        }elseif ($this->user_role === 'student'){
+            $appointments = Appointment::where('student', $this->user_id)->where(\DB::raw("(DATE_FORMAT(start_time,'%Y-%m-%d'))"), $date)->get();
+        }
+        
+        $jsondata = $appointments->count();
 
-        dd($data);
-//        return $data;
-        if ($data > 0){
-            return 'welcome' . ' '.  $test['user']->name .' '. 'todays your appointmemt';
+        if ($jsondata > 0){
+            return response()->json($appointments);
         }else{
             return 'Vandaag heeft u geen Appoinment';
-
         }
     }
 
