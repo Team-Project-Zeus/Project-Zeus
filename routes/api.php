@@ -16,6 +16,11 @@ use App\Http\Resources\User as UserResource;
 |
 */
 
+
+Route::get('/api/appointments/daily', 'AppointmentController@todaysAppointment');
+
+Route::get('/api/appointments/availability', 'AppointmentController@getAvailability');
+
 Route::group(['middleware' => 'check.role.driving_instructor'], function () {
     Route::apiResource('/api/appointments', 'AppointmentController')->only(['store']);
 });

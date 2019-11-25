@@ -198,23 +198,14 @@ class AppointmentController extends Controller
         //pakt alleen de eerste
 //        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
 
-
-//
-        $test = Appointment::find($jsondata[0]['id']);
-        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
-
-        //try this for all
-//        $test = Appointment::where('id' , $jsondata[0]['id'])->get();
-//        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
-
-
-//        dd($test);
-
+        foreach ($jsondata as $m){
+            $m->user->where('id' , $m->driving_instructor)->get();
+        }
 
         if ($appointments->where('student', $this->user_id)->count() === 0){
             echo 'student has no appointments!';
         }else {
-            return response()->json(array($jsondata ,$test['user']));
+            return response()->json(array($jsondata));
         }
     }
 
@@ -242,5 +233,27 @@ class AppointmentController extends Controller
         }else {
             return response()->json($jsondata);
         }
+    }
+
+    public function todaysAppointment(){
+        $appointments = Appointment::where('student', '=', $this->user_id);
+        $jsondata = $appointments->get();
+        $test = Appointment::find($jsondata[0]['id']);
+        $test->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+        $date = date('Y-m-d');
+
+
+        $q = Appointment::where('start_time', $date)->count();
+        if ($q > 0){
+            return 'welcome' . ' '.  $test['user']->name .' '. 'todays your appointmemt';
+        }else{
+            return 'Vandaag heeft u geen Appoinment';
+        }
+    }
+
+    public function getAvailability(){
+        $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reseverd'], ['student' , NULL]])->get();
+
+        return response()->json($appointments);
     }
 }
