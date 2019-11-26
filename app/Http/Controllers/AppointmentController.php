@@ -138,34 +138,28 @@ class AppointmentController extends Controller
 
             $appointment = Appointment::find($appointmentid); //TODO add check for student/instructor id
 
-        if ($user_role === 'driving_instructor') {
-            if ($appointment['student'] == $this->user_id) {
-                $appointment->delete();
+            if ($user_role === 'driving_instructor') {
+                if ($appointment['student'] == $this->user_id) {
+                    $appointment->delete();
+                }
+                if ($appointment['student'] == null) {
+                    $appointment->delete();
+                }
+            } else if ($user_role != 'default' || 'driving_instructor'){
 
-            }
-            if ($appointment['student'] == null) {
-                $appointment->delete();
+                if ($appointment['student'] == null) {
+                    $appointment->update();
 
-            } else {
-            }
-        } else if ($user_role != 'default' || 'driving_instructor'){
+                }
+                if ($appointment['student'] == $this->user_id) {
+                    $appointment['status'] = 'available';
+                    $appointment['student']  = NULL;
 
-            if ($appointment['student'] == null) {
-                $appointment->update();
-
-            }
-            if ($appointment['student'] == $this->user_id) {
-                $appointment['status'] = 'available';
-                $appointment['student']  = NULL;
-
-                $appointment->update();
-
-            }
+                    $appointment->update();
+                }
         }
-        }
-            return response()->json($appointment);
-
-
+    }
+        return response()->json($appointment);
     }
 
     public function showAppointmentsStudent()
@@ -244,7 +238,7 @@ class AppointmentController extends Controller
     }
 
     public function getAvailability(){
-        dd($this->user_id);
+//        dd($this->user_id);
         $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
         dd(Appointment::find($appointments));
 
