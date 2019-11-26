@@ -142,7 +142,9 @@ class AppointmentController extends Controller
         $payload = auth()->payload();
         $user_role = $payload->get('user_role');
         $id = $request->id;
-        $appointment = Appointment::find($id[0]);
+        foreach ($id as $appointmentid){
+
+            $appointment = Appointment::find($appointmentid); //TODO add check for student/instructor id
 
         if ($user_role === 'driving_instructor') {
             if ($appointment['student'] == $this->user_id) {
@@ -174,6 +176,7 @@ class AppointmentController extends Controller
             } else {
                 return response()->json('wrong appointment', 403);
             }
+        }
         }
     }
 
