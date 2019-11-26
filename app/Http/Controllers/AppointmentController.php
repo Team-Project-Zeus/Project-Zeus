@@ -103,18 +103,11 @@ class AppointmentController extends Controller
 
             if ($appointment['student'] == null) {
                 $appointment['student'] =  $this->user_id;
-                $appointment['status'] =  $request->status;
+                $appointment['status'] =  'reseved';
 
                 $appointment->save();
                 return response()->json($appointment);
-            }
-            else if ($appointment['student'] == $this->user_id) {
-                $appointment['student'] =  $this->user_id;
-                $appointment['status'] =  $request->status;
-
-                $appointment->save();
-                return response()->json($appointment);
-            } else {
+            }else {
                 return response()->json('wrong appointment', 403);
             }
 
@@ -122,13 +115,13 @@ class AppointmentController extends Controller
 
             if ($appointment['student'] == null) {
                 $appointment['student'] =  $this->user_id;
-                $appointment['status'] =  $request->status;
+                $appointment['status'] =  'reseverd';
 
                 $appointment->save();
                 return response()->json($appointment);
             }
             if ($appointment['student'] == $this->user_id) {
-                $appointment['status'] =  $request->status;
+                $appointment['status'] =  'reseverd';
                 $appointment->save();
                 return response()->json($appointment);
             } else {
