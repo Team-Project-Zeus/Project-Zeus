@@ -231,7 +231,7 @@ class AppointmentController extends Controller
         $jsondata = $appointments->count();
 
         if ($jsondata > 0){
-            return response()->json($appointments, );
+            return response()->json($appointments );
         }else{
             return 'Vandaag heeft u geen Appoinment';
         }
