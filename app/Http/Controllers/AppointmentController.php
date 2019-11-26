@@ -257,7 +257,7 @@ class AppointmentController extends Controller
     }
 
     public function getAvailability(){
-        $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reseverd'], ['student' , NULL]])->get();
+        $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reserverd'], ['student' , NULL]])->get();
 
         return response()->json($appointments);
     }
