@@ -92,7 +92,11 @@ class AppointmentController extends Controller
         $payload = auth()->payload();
         $id = $request->id;
         $user_role = $payload->get('user_role');
-        $appointment = Appointment::find($id[0]);
+//        dd($appointment->count());
+        $id = $request->id;
+        foreach ($id as $appointmentid){
+            $appointment = Appointment::find($appointmentid);
+
 
         if ($user_role == 'driving_instructor') {
             $request->validate([
@@ -106,11 +110,7 @@ class AppointmentController extends Controller
                 $appointment['status'] =  'reseved';
 
                 $appointment->save();
-                return response()->json($appointment);
-            }else {
-                return response()->json('wrong appointment', 403);
             }
-
         }else if ($user_role != 'default' || 'driving_instructor'){
 
             if ($appointment['student'] == null) {
@@ -118,16 +118,15 @@ class AppointmentController extends Controller
                 $appointment['status'] =  'reseverd';
 
                 $appointment->save();
-                return response()->json($appointment);
             }
             if ($appointment['student'] == $this->user_id) {
                 $appointment['status'] =  'reseverd';
                 $appointment->save();
-                return response()->json($appointment);
-            } else {
-                return response()->json('wrong appointment', 403);
             }
         }
+        }
+        return response()->json($appointment);
+
     }
 
     public function destroy(Request $request)
@@ -143,21 +142,17 @@ class AppointmentController extends Controller
             if ($appointment['student'] == $this->user_id) {
                 $appointment->delete();
 
-                return response()->json($appointment);
             }
             if ($appointment['student'] == null) {
                 $appointment->delete();
 
-                return response()->json($appointment);
             } else {
-                return response()->json('wrong appointment', 403);
             }
         } else if ($user_role != 'default' || 'driving_instructor'){
 
             if ($appointment['student'] == null) {
                 $appointment->update();
 
-                return response()->json($appointment);
             }
             if ($appointment['student'] == $this->user_id) {
                 $appointment['status'] = 'available';
@@ -165,12 +160,12 @@ class AppointmentController extends Controller
 
                 $appointment->update();
 
-                return response()->json($appointment);
-            } else {
-                return response()->json('wrong appointment', 403);
             }
         }
         }
+            return response()->json($appointment);
+
+
     }
 
     public function showAppointmentsStudent()
@@ -194,7 +189,6 @@ class AppointmentController extends Controller
 
         //pakt alleen de eerste
 //        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
-
 
 
 
@@ -250,7 +244,9 @@ class AppointmentController extends Controller
     }
 
     public function getAvailability(){
-        $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reserverd'], ['student' , NULL]])->get();
+        dd($this->user_id);
+        $appointments = Appointment::where('driving_instructor', $this->user_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
+        dd(Appointment::find($appointments));
 
         return response()->json($appointments);
     }

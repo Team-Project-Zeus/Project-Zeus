@@ -17,10 +17,15 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('email')->unique();
+            $table->enum('user_role', ['default', 'student', 'driving_instructor', 'admin'])->default('default');
+            $table->unsignedBigInteger('instructor_id')->nullable();
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('instructor_id')->references('id')->on('users');
         });
     }
 
