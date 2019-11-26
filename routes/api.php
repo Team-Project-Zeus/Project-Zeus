@@ -17,7 +17,7 @@ use App\Http\Resources\User as UserResource;
 */
 
 Route::group(['middleware' => 'check.role.driving_instructor'], function () {
-    Route::apiResource('/api/appointment', 'AppointmentController')->only(['store']);
+    Route::post('/api/appointments', 'AppointmentController@store');
 });
 
 Route::group(['middleware' => 'check.user.role'], function () {
@@ -26,10 +26,9 @@ Route::group(['middleware' => 'check.user.role'], function () {
 //gets all appointments from a driving-instructor with the equal id from the token
     Route::get('/api/appointments/instructor', 'AppointmentController@showAppointmentsInstructor');
 //This is an api resource route for the CRUD-systeem appointment
-    Route::apiResource('/api/appointments', 'AppointmentController')->except(['store']);
 
-    Route::patch('/api/appointments/edit', 'AppointmentController@update');
-    Route::delete('/api/appointments/delete', 'AppointmentController@destroy');
+    Route::patch('/api/appointments', 'AppointmentController@update');
+    Route::delete('/api/appointments', 'AppointmentController@destroy');
 
     Route::get('/api/appointments/daily', 'AppointmentController@todaysAppointment');
     Route::get('/api/appointments/availability', 'AppointmentController@getAvailability');
