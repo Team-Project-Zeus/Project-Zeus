@@ -16,7 +16,9 @@ class CreateAppointmentsTable extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('driving_instructor');
-            $table->unsignedBigInteger('student');
+            $table->unsignedBigInteger('student')->nullable();
+            $table->enum('status', ['approved', 'reseverd', 'available'])->default('available');
+            $table->string('description');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->timestamps();

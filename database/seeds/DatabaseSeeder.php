@@ -11,6 +11,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(UsersSeeder::class);
+        //this command is meant for a seeder
+        $this->call(
+            UsersSeeder::class,
+            AppointmentsSeeder::class,
+        );
+
+        //this command is meant for a factory
+//        factory(App\appointments::class, 50)->create();
     }
 }

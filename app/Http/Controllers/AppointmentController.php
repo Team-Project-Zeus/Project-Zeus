@@ -2,44 +2,78 @@
 
 namespace App\Http\Controllers;
 
+use function Composer\Autoload\includeFile;
 use Illuminate\Http\Request;
-use App\appointments;
+use App\Appointment;
+use App\User;
+use Illuminate\Support\Facades\App;
+use Illuminate\Database\Eloquent\Builder;
+use DB;
+
 
 class AppointmentController extends Controller
 {
-    private $student_id;
+    private $user_id;
+    private $user_role;
 
     public function __construct(){
         $payload = auth()->payload();
-        $this->student_id= $payload->get('id');
+        $this->user_id = $payload->get('id');
+        $this->user_role = $payload->get('user_role');
     }
 
-    /**
-     * Before it's saves the data, it goes through the middleware and check if the id and the user_role are equal.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'driving_instructor' => 'required',
-            'start_time' => 'required',
-            'end_time' => 'required'
-        ]);
+        $payload = auth()->payload();
+        $user_role = $payload->get('user_role');
 
-        $appointment = new appointments([
-            'driving_instructor' => $request->get('driving_instructor'),
-            'student' => $request->get('student', $this->student_id),
-            'start_time' => $request->get('start_time'),
-            'end_time' => $request->get('end_time'),
-        ]);
+        if ($user_role === 'driving_instructor') {
+            $request->validate([
+                'description' => 'required',
+                'status' => 'required',
+                'start_time' => 'required',
+                'end_time' => 'required',
+            ]);
 
-        $appointment->save();
+            $end = strtotime($request->end_time);
+            $start = strtotime($request->start_time);
+            $nextWeek = $end - $start;
+            $nextWeekkk = 1800;
+            $halfhours = ($nextWeek / $nextWeekkk);
 
-        return response()->json($appointment);
-        //if ($appointment->where('id' ,'=', $appointment)->count() === 0) {
-        //echo 'appointment already exist!';
+            for ($i = 1; $i <= $halfhours; $i++) {
+                $appointment = new Appointment([
+                    'driving_instructor' => $this->user_id,
+                    'student' => $request->get('student'),
+                    'status' => $request->get('status'),
+                    'description' => $request->get('description'),
+                    'start_time' => $request->get('start_time'),
+                    'end_time' => $request->get('end_time')
+                ]);
+
+                $time = ((($i - 1) * 30));
+                $addTime = "PT" . strval($time) . "M";
+                $date = new \DateTime($appointment->start_time);
+                $date->add(new \DateInterval(strval($addTime)));
+                $appointment->start_time = $date->format('Y-m-d H:i:s');
+                $date->add(new \DateInterval('PT30M'));
+                $appointment->end_time = $date->format('Y-m-d H:i:s');
+
+//                $appointmentss = Appointment::where([
+//                    ['driving_instructor', '==', '1'],
+//                    ['student', '==', '1'],
+//                    ['start_time', '==', '1'],
+//                    ['end_time', '==', '1'],
+//                ])->get();
+//                dd($appointmentss);
+
+                $appointment->save();
+            }
+                return response()->json($appointment);
+            }
+        else{
+            echo 'You dont have the right permission';
+        }
     }
 
    /**
@@ -49,41 +83,83 @@ class AppointmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $appointment_id)
+    public function update(Request $request)
     {
         $request->validate([
-            'driving_instructor'=>'required',
-            'start_time'=>'required',
-           'end_time'=>'required'
+            'id' => 'required',
         ]);
 
-        $product = appointments::find($appointment_id);
+        $payload = auth()->payload();
+        $id = $request->id;
+        $user_role = $payload->get('user_role');
+//        dd($appointment->count());
+        $id = $request->id;
+        foreach ($id as $appointmentid){
+            $appointment = Appointment::find($appointmentid);
 
-        $product->driving_instructor = $request->driving_instructor;
-        $product->start_time = $request->start_time;
-        $product->end_time = $request->end_time;
 
-        if ($product['student'] == $this->student_id ) {
-            $product->save();
-            return response()->json($product);
-        }else{
-            return response()->json('wrong appointment',403);
+        if ($user_role == 'driving_instructor') {
+            $request->validate([
+                'student' => 'required',
+                'status' => 'required',
+                'description' => 'required'
+            ]);
+
+            if ($appointment['student'] == null) {
+                $appointment['student'] =  $this->user_id;
+                $appointment['status'] =  'reseved';
+
+                $appointment->save();
+            }
+        }else if ($user_role != 'default' || 'driving_instructor'){
+
+            if ($appointment['student'] == null) {
+                $appointment['student'] =  $this->user_id;
+                $appointment['status'] =  'reseverd';
+
+                $appointment->save();
+            }
+            if ($appointment['student'] == $this->user_id) {
+                $appointment['status'] =  'reseverd';
+                $appointment->save();
+            }
         }
+        }
+        return response()->json($appointment);
+
     }
 
-    public function destroy($appointment_id)
+    public function destroy(Request $request)
     {
         $payload = auth()->payload();
-        $student_id = $payload->get('id');
+        $user_role = $payload->get('user_role');
+        $id = $request->id;
+        foreach ($id as $appointmentid){
 
-        $product = appointments::find($appointment_id);
+            $appointment = Appointment::find($appointmentid); //TODO add check for student/instructor id
 
-        if ($product['student'] == $student_id ) {
-            $product->delete();
-            return response()->json($product);
-        }else {
-            return response()->json('not authorized' ,403);
+            if ($user_role === 'driving_instructor') {
+                if ($appointment['student'] == $this->user_id) {
+                    $appointment->delete();
+                }
+                if ($appointment['student'] == null) {
+                    $appointment->delete();
+                }
+            } else if ($user_role != 'default' || 'driving_instructor'){
+
+                if ($appointment['student'] == null) {
+                    $appointment->update();
+
+                }
+                if ($appointment['student'] == $this->user_id) {
+                    $appointment['status'] = 'available';
+                    $appointment['student']  = NULL;
+
+                    $appointment->update();
+                }
         }
+    }
+        return response()->json($appointment);
     }
 
     public function showAppointmentsStudent()
@@ -93,13 +169,35 @@ class AppointmentController extends Controller
         //return appointmentsResource::collection($appointments);
 
         //methode 2:
-        $appointments = appointments::where('student', '=', $this->student_id);
+
+        //         use this to get the last 5 appointments
+//        $dogs = Dogs::orderBy('id', 'desc')->take(5)->get();
+
+//        this one works but with the first user, it doesnot take all the users.
+//        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+//        "$test[0]['name']" this is how you take the data from the record
+
+        //works fine but wit out the relationship
+//        $test = Appointment::where('student' , $jsondata[0]['student'])->get();
+//        $comment = App\Post::find(1)->comments()->where('title', 'foo')->first();
+
+        //pakt alleen de eerste
+//        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
+
+
+
+
+        $appointments = Appointment::where('student', '=', $this->user_id);
         $jsondata = $appointments->get();
 
-        if ($appointments->where('student', $this->student_id)->count() === 0){
+        foreach ($jsondata as $m){
+            $m->user->where('id' , $m->driving_instructor)->get();
+        }
+
+        if ($appointments->where('student', $this->user_id)->count() === 0){
             echo 'student has no appointments!';
         }else {
-            return response()->json($jsondata);
+            return response()->json(array($jsondata));
         }
     }
 
@@ -111,15 +209,36 @@ class AppointmentController extends Controller
 
         //methode 2
 
-        $payload = auth()->payload();
-        $instructor_id = $payload->get('id');
-        $appointments = appointments::where('Driving_instructor', '=', $instructor_id);
+        $appointments = Appointment::where('Driving_instructor', '=', $this->user_id);
         $jsondata = $appointments->get();
 
-        if ($appointments->where('driving_instructor', $instructor_id)->count() === 0) {
+        if ($appointments->where('driving_instructor', $this->user_id)->count() == 0) {
             echo 'Driving Instructor has no appointments!';
         }else {
             return response()->json($jsondata);
         }
+    }
+
+    public function todaysAppointment(){
+        $date = date('Y-m-d');
+
+        if ($this->user_role === 'driving_instructor') {
+            $appointments = Appointment::where('driving_instructor', $this->user_id)->where(\DB::raw("(DATE_FORMAT(start_time,'%Y-%m-%d'))"), $date)->get();
+        }elseif ($this->user_role === 'student'){
+            $appointments = Appointment::where('student', $this->user_id)->where(\DB::raw("(DATE_FORMAT(start_time,'%Y-%m-%d'))"), $date)->get();
+        }
+        
+        $jsondata = $appointments->count();
+
+        if ($jsondata > 0){
+            return response()->json($appointments );
+        }else{
+            return 'Vandaag heeft u geen Appoinment';
+        }
+    }
+
+    public function getAvailability(){
+        $user = User::find($this->user_id);
+        return response()->json($user->getAvailabilityOfInstructor());
     }
 }
