@@ -185,7 +185,7 @@ class AppointmentController extends Controller
 //        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
 
 
-        $appointments = Appointment::where('student', '=', $this->user_id);
+        $appointments = Appointment::where('student', $this->user_id);
         $jsondata = $appointments->get();
 
         foreach ($jsondata as $m){
@@ -201,14 +201,12 @@ class AppointmentController extends Controller
 
     public function showAppointmentsInstructor()
     {
-        //methode 1:
-        //$appointments = appointments::where('student', '=', $student)->get();
-        //return appointmentsResource::collection($appointments);
-
-        //methode 2
-
-        $appointments = Appointment::where('Driving_instructor', '=', $this->user_id);
+        $appointments = Appointment::where('driving_instructor', $this->user_id);
         $jsondata = $appointments->get();
+
+        foreach ($jsondata as $m){
+             $m->user = User::where('id' , $m->student)->get();
+        }
 
         if ($appointments->where('driving_instructor', $this->user_id)->count() == 0) {
             echo 'Driving Instructor has no appointments!';
