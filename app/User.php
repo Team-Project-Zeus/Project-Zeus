@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\appointments;
+use App\Appointment;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'user_role'
+        'name', 'email', 'password', 'user_role', 'id'
     ];
 
     /**
@@ -68,4 +68,16 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'driving_instructor');
+    }
+
+    public function getAvailabilityOfInstructor(){
+        $appointments = Appointment::where('driving_instructor', $this->instructor_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
+        return $appointments;
+    }
+
 }

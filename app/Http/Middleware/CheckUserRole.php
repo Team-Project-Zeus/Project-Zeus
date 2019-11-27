@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\appointments;
+use App\Appointment;
 use App\User;
 
 use Closure;
@@ -21,15 +21,10 @@ class CheckUserRole
         $payload = auth()->payload();
         //$user_role = the role from the user, retrieved from the token.
         $user_role = $payload->get('user_role');
-        $student = User::where('id', '=', $request->student)->first();
 
-        if ($user_role === 'driving_instructor') {
-            if ($student->user_role === 'student') {
-                return $next($request);
-            }else{
-                return response()->json('You dont have the right role', 403);
-            }
-        }else{
+        if ($user_role != 'default') {
+            return $next($request);
+        } else {
             return response()->json('You dont have the right role', 403);
         }
     }
