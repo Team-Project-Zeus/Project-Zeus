@@ -70,10 +70,14 @@ class LoginController extends Controller
          $token = (string)$this->guard()->getToken();
          $expiration = $this->guard()->getPayload()->get('exp');
 
+        $payload = auth()->payload();
+
+
          return response()->json([
              'token' => $token,
              'token_type' => 'bearer',
              'expires_in' => $expiration - time(),
+             'user_role' => $payload->get('user_role')
          ]);
      }
 

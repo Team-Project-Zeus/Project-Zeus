@@ -185,8 +185,6 @@ class AppointmentController extends Controller
 //        $test = Appointment::find($jsondata[0]['id'])->user->where('id' , $jsondata[0]['driving_instructor'])->get();
 
 
-
-
         $appointments = Appointment::where('student', '=', $this->user_id);
         $jsondata = $appointments->get();
 
@@ -197,7 +195,7 @@ class AppointmentController extends Controller
         if ($appointments->where('student', $this->user_id)->count() === 0){
             echo 'student has no appointments!';
         }else {
-            return response()->json(array($jsondata));
+            return response()->json($jsondata);
         }
     }
 
