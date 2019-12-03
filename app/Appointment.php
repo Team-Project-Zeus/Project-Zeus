@@ -18,4 +18,9 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'driving_instructor', 'id');
     }
+
+    public function userStudent()
+    {
+        return $this->belongsTo(User::class, 'student', 'id');
+    }
 }
