@@ -77,6 +77,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getAvailabilityOfInstructor(){
         $appointments = Appointment::where('driving_instructor', $this->instructor_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
+
         return $appointments;
     }
 

@@ -17,15 +17,13 @@ class CheckUserRoleDrivingInstructor
     public function handle($request, Closure $next)
     {
         $payload = auth()->payload();
-        //$user_role = the role from the user, retrieved from the token.
-        $user_role = $payload->get('user_role');
+        $user_role = $payload->get('user_role'); //$user_role = the role from the user, retrieved from the token.
         $student = User::where('id', '=', $request->student)->first();
 
-//        dd($student);
         if ($user_role === 'driving_instructor') {
             if ($student['user_role'] === 'student' or $student['user_role'] === null) {
                 return $next($request);
-            }else{
+            } else {
                 return response()->json('The student is not right.', 403);
             }
         }
