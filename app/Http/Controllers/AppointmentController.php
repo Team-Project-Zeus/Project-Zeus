@@ -177,7 +177,7 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::where('driving_instructor', $this->user_id)->get(); //Get all the record where the 'driving_instructor' is equal to the 'user_id'
 
-        foreach ($jsondata as $m){
+        foreach ($appointments as $m){
 //             $m->user->where('id' , $m->student)->get();
              if($m->student){
                  $m->user = User::where('id', $m->student)->get();
