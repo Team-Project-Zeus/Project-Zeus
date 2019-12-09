@@ -19,8 +19,7 @@ class CheckUserRole
     public function handle($request, Closure $next)
     {
         $payload = auth()->payload();
-        //$user_role = the role from the user, retrieved from the token.
-        $user_role = $payload->get('user_role');
+        $user_role = $payload->get('user_role'); //$user_role = the role from the user, retrieved from the token.
 
         if ($user_role != 'default') {
             return $next($request);

@@ -26,11 +26,11 @@ Route::group(['middleware' => 'check.user.role'], function () {
 //gets all appointments from a driving-instructor with the equal id from the token
     Route::get('/api/appointments/instructor', 'AppointmentController@showAppointmentsInstructor');
 //This is an api resource route for the CRUD-systeem appointment
-
     Route::patch('/api/appointments', 'AppointmentController@update');
     Route::delete('/api/appointments', 'AppointmentController@destroy');
-
+//gets all the appointments from a user of today.
     Route::get('/api/appointments/daily', 'AppointmentController@todaysAppointment');
+//
     Route::get('/api/appointments/availability', 'AppointmentController@getAvailability');
 });
 
