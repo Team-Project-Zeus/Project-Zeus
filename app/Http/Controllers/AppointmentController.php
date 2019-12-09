@@ -205,7 +205,11 @@ class AppointmentController extends Controller
         $jsondata = $appointments->get();
 
         foreach ($jsondata as $m){
-             $m->user = User::where('id' , $m->student)->get();
+//             $m->user->where('id' , $m->student)->get();
+             if($m->student){
+                 $m->user = User::where('id', $m->student)->get();
+             }
+
         }
 
         if ($appointments->where('driving_instructor', $this->user_id)->count() == 0) {
