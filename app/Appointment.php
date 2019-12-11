@@ -14,7 +14,7 @@ class Appointment extends Model
         'driving_instructor', 'student', 'description','status', 'start_time', 'end_time', 'id'
     ];
 
-    public function user()
+    public function userInstructor()
     {
         return $this->belongsTo(User::class, 'driving_instructor', 'id');
     }
@@ -23,4 +23,11 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'student', 'id');
     }
+
+    public function getAvailabilityOfInstructor(){
+        $appointments = Appointment::where('driving_instructor', $this->instructor_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
+
+        return $appointments;
+    }
+
 }

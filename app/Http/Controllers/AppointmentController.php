@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AppointmentCollection as AppointmentResource;
 use function Composer\Autoload\includeFile;
 use Illuminate\Http\Request;
 use App\Appointment;
@@ -101,13 +102,13 @@ class AppointmentController extends Controller
 
                 if ($appointment['student'] == null) {
                     $appointment['student'] =  $this->user_id;
-                    $appointment['status'] =  'reseverd';
+                    $appointment['status'] =  'reserved';
 
                     $appointment->save();
                 }
 
                 if ($appointment['student'] == $this->user_id) {
-                    $appointment['status'] =  'reseverd';
+                    $appointment['status'] =  'reserved';
                     $appointment->save();
                 }
             }
@@ -157,16 +158,10 @@ class AppointmentController extends Controller
      */
     public function showAppointmentsStudent()
     {
-        $appointments = Appointment::where('student', $this->user_id)->get();
-
-        foreach ($appointments as $id){
-            $id->user->where('id' , $id->driving_instructor)->get();
-        }
-
-        if ($appointments->where('student', $this->user_id)->count() === 0){
-            echo 'student has no appointments!';
+        if (Appointment::where('student', $this->user_id)->count() == 0){
+            echo 'Student has no appointments!';
         }else {
-            return response()->json($appointments );
+            return new AppointmentResource(Appointment::where('student', $this->user_id)->get());
         }
     }
 
@@ -175,23 +170,12 @@ class AppointmentController extends Controller
      */
     public function showAppointmentsInstructor()
     {
-        $appointments = Appointment::where('driving_instructor', $this->user_id)->get(); //Get all the record where the 'driving_instructor' is equal to the 'user_id'
-
-        foreach ($appointments as $m){
-//             $m->user->where('id' , $m->student)->get();
-             if($m->student){
-                 $m->user = User::where('id', $m->student)->get();
-             }
-
-        }
-
-        if ($appointments->where('driving_instructor', $this->user_id)->count() == 0) {
-            echo 'Driving Instructor has no appointments!';
+        if (Appointment::where('driving_instructor', $this->user_id)->count() == 0){
+            echo 'Driving instructor has no appointments!';
         }else {
-            return response()->json($appointments);
+            return new AppointmentResource(Appointment::where('driving_instructor', $this->user_id)->get());
         }
     }
-
     /**
      * @return \Illuminate\Http\JsonResponse|string
      */
