@@ -25,8 +25,8 @@ class Appointment extends Model
     }
 
     public function getAvailabilityOfInstructor(){
-        $appointments = Appointment::where('driving_instructor', $this->instructor_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
-
+        $user =  User::find(auth()->payload()->get('id'));
+        $appointments = Appointment::where('driving_instructor', $user->instructor_id)->where([['status', '!=', 'reserved'], ['student' , NULL]])->get();
         return $appointments;
     }
 

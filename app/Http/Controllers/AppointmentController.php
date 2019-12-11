@@ -201,7 +201,9 @@ class AppointmentController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getAvailability(){
-        $user = User::find($this->user_id);
-        return response()->json($user->getAvailabilityOfInstructor());
+        $appointmentModel = new Appointment;
+        $appointments = $appointmentModel->getAvailabilityOfInstructor();
+
+        return new AppointmentResource($appointments);
     }
 }
