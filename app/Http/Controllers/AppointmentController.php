@@ -17,7 +17,8 @@ class AppointmentController extends Controller
     private $user_id;
     private $user_role;
 
-    public function __construct(){
+    public function __construct()
+    {
         $payload = auth()->payload();
         $this->user_id = $payload->get('id');
         $this->user_role = $payload->get('user_role');
@@ -26,7 +27,7 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         //Checks if the user role equals is to 'driving_instructor'.
-        if ( $this->user_role === 'driving_instructor') {
+        if ($this->user_role === 'driving_instructor') {
             $request->validate([
                 'description' => 'required',
                 'status' => 'required',
@@ -36,8 +37,8 @@ class AppointmentController extends Controller
 
             $end = strtotime($request->end_time);
             $start = strtotime($request->start_time);
-            $totalMinutes= $end - $start; // calcutes the total minutes from one appointment
-            $thirtyMinute= 1800; //30min (1 slot)
+            $totalMinutes = $end - $start; // calcutes the total minutes from one appointment
+            $thirtyMinute = 1800; //30min (1 slot)
             $totalSlots = ($totalMinutes / $thirtyMinute);
 
             for ($i = 1; $i <= $totalSlots; $i++) {
@@ -79,9 +80,10 @@ class AppointmentController extends Controller
         ]);
 
         $id = $request->id;  //Get the id from the request
+        $appointments = collect();
 
         //loop threw all the id's
-        foreach ($id as $appointmentid){
+        foreach ($id as $appointmentid) {
 
             $appointment = Appointment::find($appointmentid);
 
@@ -93,27 +95,37 @@ class AppointmentController extends Controller
                 ]);
 
                 if ($appointment['student'] == null) {
-                    $appointment['student'] =  $this->user_id;
-                    $appointment['status'] =  'reserved';
+                    $appointment['student'] = $this->user_id;
+                    $appointment['status'] = 'reserved';
+//                    dd($appointment);
+//                    array_push($appointments, $appointment);
+                    $appointments->push($appointment);
 
                     $appointment->save();
+
                 }
-            } else if ($this->user_role != 'default' || 'driving_instructor'){
+            } else if ($this->user_role != 'default' || 'driving_instructor') {
 
                 if ($appointment['student'] == null) {
-                    $appointment['student'] =  $this->user_id;
-                    $appointment['status'] =  'reserved';
+                    $appointment['student'] = $this->user_id;
+                    $appointment['status'] = 'reserved';
+//                    array_push($appointments, $appointment)
+                    $appointments->push($appointment);
 
                     $appointment->save();
                 }
 
                 if ($appointment['student'] == $this->user_id) {
-                    $appointment['status'] =  'reserved';
+                    $appointment['status'] = 'reserved';
+                    $appointments->push($appointment);
+//                    array_push($appointments, $appointment);
                     $appointment->save();
                 }
             }
         }
-        return response()->json($appointment);
+//        dd(var_dump());
+
+        return new AppointmentResource($appointments);
     }
 
     /**
@@ -124,7 +136,7 @@ class AppointmentController extends Controller
     {
         $id = $request->id;
 
-        foreach ($id as $appointmentid){
+        foreach ($id as $appointmentid) {
 
             $appointment = Appointment::find($appointmentid); //TODO add check for student/instructor id
 
@@ -136,7 +148,7 @@ class AppointmentController extends Controller
                 if ($appointment['student'] == null) {
                     $appointment->delete();
                 }
-            } else if ($this->user_role != 'default' || 'driving_instructor'){
+            } else if ($this->user_role != 'default' || 'driving_instructor') {
 
                 if ($appointment['student'] == null) {
                     $appointment->update();
@@ -144,7 +156,7 @@ class AppointmentController extends Controller
 
                 if ($appointment['student'] == $this->user_id) {
                     $appointment['status'] = 'available';
-                    $appointment['student']  = NULL;
+                    $appointment['student'] = NULL;
 
                     $appointment->update();
                 }
@@ -159,9 +171,9 @@ class AppointmentController extends Controller
     //TODO Remove function when frontend is updated
     public function showAppointmentsStudent()
     {
-        if (Appointment::where('student', $this->user_id)->count() == 0){
+        if (Appointment::where('student', $this->user_id)->count() == 0) {
             echo 'Student has no appointments!';
-        }else {
+        } else {
             return new AppointmentResource(Appointment::where('student', $this->user_id)->get());
         }
     }
@@ -172,38 +184,41 @@ class AppointmentController extends Controller
     //TODO Remove function when frontend is updated
     public function showAppointmentsInstructor()
     {
-        if (Appointment::where('driving_instructor', $this->user_id)->count() == 0){
+        if (Appointment::where('driving_instructor', $this->user_id)->count() == 0) {
             echo 'Driving instructor has no appointments!';
-        }else {
+        } else {
             return new AppointmentResource(Appointment::where('driving_instructor', $this->user_id)->get());
         }
     }
 
-    public function showAppointments(){
-        if (Appointment::where(auth()->payload()->get('user_role'), $this->user_id)->count() == 0){
+    public function showAppointments()
+    {
+        if (Appointment::where(auth()->payload()->get('user_role'), $this->user_id)->count() == 0) {
             echo 'Driving instructor has no appointments!';
-        }else {
+        } else {
             return new AppointmentResource(Appointment::where(auth()->payload()->get('user_role'), $this->user_id)->get());
         }
 
     }
+
     /**
      * @return \Illuminate\Http\JsonResponse|string
      */
-    public function todaysAppointment(){
+    public function todaysAppointment()
+    {
         $date = date('Y-m-d'); // Date format is year-month-day
 
         if ($this->user_role === 'driving_instructor') {
             $appointments = Appointment::where('driving_instructor', $this->user_id)->where(\DB::raw("(DATE_FORMAT(start_time,'%Y-%m-%d'))"), $date)->get();
-        }elseif ($this->user_role === 'student'){
+        } elseif ($this->user_role === 'student') {
             $appointments = Appointment::where('student', $this->user_id)->where(\DB::raw("(DATE_FORMAT(start_time,'%Y-%m-%d'))"), $date)->get();
         }
-        
+
         $countAppointments = $appointments->count(); //Count how much appointments there are and convert them to a digit
 
-        if ($countAppointments > 0){
+        if ($countAppointments > 0) {
             return response()->json($appointments);
-        }else{
+        } else {
             return 'Vandaag heeft u geen Appoinment';
         }
     }
@@ -211,7 +226,8 @@ class AppointmentController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAvailability(){
+    public function getAvailability()
+    {
         $appointmentModel = new Appointment;
         $appointments = $appointmentModel->getAvailabilityOfInstructor();
 

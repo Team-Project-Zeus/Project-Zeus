@@ -17,7 +17,7 @@ class CreateAppointmentsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('driving_instructor');
             $table->unsignedBigInteger('student')->nullable();
-            $table->enum('status', ['approved', 'reseverd', 'available'])->default('available');
+            $table->enum('status', ['approved', 'reserved', 'available'])->default('available');
             $table->string('description');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
