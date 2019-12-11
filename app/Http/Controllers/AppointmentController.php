@@ -94,7 +94,7 @@ class AppointmentController extends Controller
 
                 if ($appointment['student'] == null) {
                     $appointment['student'] =  $this->user_id;
-                    $appointment['status'] =  'reseved';
+                    $appointment['status'] =  'reserved';
 
                     $appointment->save();
                 }
