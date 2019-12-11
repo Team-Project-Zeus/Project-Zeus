@@ -156,6 +156,7 @@ class AppointmentController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
+    //TODO Remove function when frontend is updated
     public function showAppointmentsStudent()
     {
         if (Appointment::where('student', $this->user_id)->count() == 0){
@@ -168,6 +169,7 @@ class AppointmentController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
+    //TODO Remove function when frontend is updated
     public function showAppointmentsInstructor()
     {
         if (Appointment::where('driving_instructor', $this->user_id)->count() == 0){
@@ -175,6 +177,15 @@ class AppointmentController extends Controller
         }else {
             return new AppointmentResource(Appointment::where('driving_instructor', $this->user_id)->get());
         }
+    }
+
+    public function showAppointments(){
+        if (Appointment::where(auth()->payload()->get('user_role'), $this->user_id)->count() == 0){
+            echo 'Driving instructor has no appointments!';
+        }else {
+            return new AppointmentResource(Appointment::where(auth()->payload()->get('user_role'), $this->user_id)->get());
+        }
+
     }
     /**
      * @return \Illuminate\Http\JsonResponse|string

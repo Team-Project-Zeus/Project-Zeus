@@ -22,6 +22,8 @@ Route::group(['middleware' => 'check.role.driving_instructor'], function () {
 
 Route::group(['middleware' => 'check.user.role'], function () {
 //gets all appointments from a student with the equal id from the token
+    Route::get('/api/appointments', 'AppointmentController@showAppointments');
+
     Route::get('/api/appointments/student', 'AppointmentController@showAppointmentsStudent');
 //gets all appointments from a driving-instructor with the equal id from the token
     Route::get('/api/appointments/instructor', 'AppointmentController@showAppointmentsInstructor');
